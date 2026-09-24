@@ -19,7 +19,13 @@ class AdminController extends Controller
     public function index()
     {
         $logs = LogAktivitas::with('user')->latest()->take(10)->get();
-        return view('admin.dashboard', compact('logs'));
+
+        $totalAlat = Alat::count();
+        $sedangDipinjam = Peminjaman::where('status', 'dipinjam')->count();
+        $perluPersetujuan = Peminjaman::where('status', 'diajukan')->count();
+        $totalUser = User::count();
+
+        return view('admin.dashboard', compact('logs', 'totalAlat', 'sedangDipinjam', 'perluPersetujuan', 'totalUser'));
     }
 
     // ==========================================
@@ -55,7 +61,7 @@ class AdminController extends Controller
     {
         $request->validate([
             'nama_alat'      => 'required|string|max:255',
-            'kategori_id'    => 'required|exists:kategori,id', // diperbaiki dari 'kategoris'
+            'kategori_id'    => 'required|exists:kategori,id',
             'stok'           => 'required|integer|min:0',
             'status_kondisi' => 'required|string|max:100',
             'deskripsi'      => 'nullable|string',
@@ -89,7 +95,7 @@ class AdminController extends Controller
 
         $request->validate([
             'nama_alat'      => 'required|string|max:255',
-            'kategori_id'    => 'required|exists:kategori,id', // diperbaiki dari 'kategoris'
+            'kategori_id'    => 'required|exists:kategori,id',
             'stok'           => 'required|integer|min:0',
             'status_kondisi' => 'required|string|max:100',
             'deskripsi'      => 'nullable|string',
@@ -238,7 +244,7 @@ class AdminController extends Controller
     public function storeKategori(Request $request)
     {
         $request->validate([
-            'nama_kategori' => 'required|string|max:255|unique:kategori,nama_kategori', // diperbaiki dari 'kategoris'
+            'nama_kategori' => 'required|string|max:255|unique:kategori,nama_kategori',
         ]);
 
         Kategori::create([
@@ -259,7 +265,7 @@ class AdminController extends Controller
         $kategori = Kategori::findOrFail($id);
 
         $request->validate([
-            'nama_kategori' => 'required|string|max:255|unique:kategori,nama_kategori,' . $id, // diperbaiki dari 'kategoris'
+            'nama_kategori' => 'required|string|max:255|unique:kategori,nama_kategori,' . $id,
         ]);
 
         $kategori->update([
@@ -273,7 +279,7 @@ class AdminController extends Controller
     {
         $kategori = Kategori::findOrFail($id);
 
-        if ($kategori->alat()->count() > 0) { // diperbaiki dari 'alats()' -> 'alat()' sesuai nama relasi di model
+        if ($kategori->alat()->count() > 0) {
             return redirect()->route('admin.kategori.index')
                 ->with('error', 'Kategori tidak dapat dihapus karena masih digunakan oleh data alat.');
         }

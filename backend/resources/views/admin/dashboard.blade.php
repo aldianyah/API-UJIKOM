@@ -13,7 +13,31 @@
         <span class="uppercase font-bold text-emerald-900">{{ auth()->user()->role }}</span>.
     </div>
 
-    <!-- Tabel Log Aktivitas -->
+    <!-- Kartu Statistik -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white border border-gray-200 rounded-lg p-4">
+            <i class="fa-solid fa-screwdriver-wrench text-blue-500 text-lg"></i>
+            <div class="text-xl font-semibold text-gray-900 mt-2">{{ $totalAlat }}</div>
+            <div class="text-xs text-gray-500">Total Alat</div>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-lg p-4">
+            <i class="fa-solid fa-clock text-amber-500 text-lg"></i>
+            <div class="text-xl font-semibold text-gray-900 mt-2">{{ $sedangDipinjam }}</div>
+            <div class="text-xs text-gray-500">Sedang Dipinjam</div>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-lg p-4">
+            <i class="fa-solid fa-hourglass-half text-red-500 text-lg"></i>
+            <div class="text-xl font-semibold text-gray-900 mt-2">{{ $perluPersetujuan }}</div>
+            <div class="text-xs text-gray-500">Perlu Persetujuan</div>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-lg p-4">
+            <i class="fa-solid fa-users text-emerald-500 text-lg"></i>
+            <div class="text-xl font-semibold text-gray-900 mt-2">{{ $totalUser }}</div>
+            <div class="text-xs text-gray-500">Total User</div>
+        </div>
+    </div>
+
+    <!-- Log Aktivitas -->
     <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
 
         <div class="px-6 py-5 border-b border-gray-200 bg-gray-50">
@@ -22,36 +46,18 @@
             </h3>
         </div>
 
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-gray-100 text-gray-600 text-xs uppercase tracking-wider">
-                        <th class="py-3 px-4 border-b">Waktu</th>
-                        <th class="py-3 px-4 border-b">User</th>
-                        <th class="py-3 px-4 border-b">Aktivitas</th>
-                    </tr>
-                </thead>
-
-                <tbody class="text-gray-700 text-sm">
-                    @forelse($logs as $log)
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="py-3 px-4 border-b">{{ $log->created_at }}</td>
-                            <td class="py-3 px-4 border-b font-medium text-gray-900">
-                                {{ $log->user->name ?? 'Sistem' }}
-                            </td>
-                            <td class="py-3 px-4 border-b">
-                                {{ $log->aktivitas }}
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="3" class="py-4 text-center text-gray-500">
-                                Belum ada log aktivitas.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+        <div class="divide-y divide-gray-100">
+            @forelse($logs as $log)
+                <div class="flex items-baseline gap-3 px-6 py-3 text-sm hover:bg-gray-50 transition">
+                    <span class="text-gray-400 text-xs w-28 shrink-0">{{ $log->created_at }}</span>
+                    <span class="font-medium text-gray-900 w-36 shrink-0">{{ $log->user->name ?? 'Sistem' }}</span>
+                    <span class="text-gray-600">{{ $log->aktivitas }}</span>
+                </div>
+            @empty
+                <div class="px-6 py-6 text-center text-gray-500 text-sm">
+                    Belum ada log aktivitas.
+                </div>
+            @endforelse
         </div>
 
     </div>

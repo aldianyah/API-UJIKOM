@@ -2,39 +2,45 @@
 
 namespace App\Observers;
 
-use App\Models\Alat;
+use App\Models\Pengembalian;
 use App\Models\LogAktivitas;
-use Illuminate\Support\Facades\Auth;
 
 class AlatObserver
 {
-    private function catatLog(string $pesan): void
+    public function created(Pengembalian $pengembalian)
     {
-        if (Auth::check()) {
-            LogAktivitas::create([
-                'user_id' => Auth::id(),
-                'aktivitas' => $pesan,
-            ]);
+        LogAktivitas::create([
+            'user_id' => auth()->id() ?? $pengembalian->petugas_id,
+            'aktivitas' => "Memproses pengembalian alat untuk Peminjaman ID: {$pengembalian->peminjaman_id} dengan kondisi '{$pengembalian->kondisi_kembali}' dan denda Rp " . number_format($pengembalian->denda, 0, ',', '.') . ".",
+        ]);
+    }
+
+    public function updated(Pengembalian $pengembalian)
+    {
+        $changes = [];
+
+        foreach ($pengembalian->getChanges() as $key => $newValue) {
+            if ($key != 'updated_at') {
+                $oldValue = $pengembalian->getOriginal($key);
+                $changes[] = "kolom '{$key}' dari '{$oldValue}' ke '{$newValue}'";
+            }
         }
+
+        $detailPerubahan = !empty($changes)
+            ? implode(', ', $changes)
+            : 'memperbarui data';
+
+        LogAktivitas::create([
+            'user_id' => auth()->id(),
+            'aktivitas' => "Memperbarui pengembalian ID {$pengembalian->id}: {$detailPerubahan}.",
+        ]);
     }
 
-    public function created(Alat $alat): void
+    public function deleted(Pengembalian $pengembalian)
     {
-        $this->catatLog("Menambahkan master data alat baru: {$alat->nama_alat} (ID: {$alat->id})");
-    }
-
-    public function updated(Alat $alat): void
-    {
-        $perubahanArray = array_diff(array_keys($alat->getChanges()), ['updated_at']);
-
-        if (!empty($perubahanArray)) {
-            $perubahan = implode(', ', $perubahanArray);
-            $this->catatLog("Memperbarui data alat '{$alat->nama_alat}' (Kolom yang diubah: {$perubahan})");
-        }
-    }
-
-    public function deleted(Alat $alat): void
-    {
-        $this->catatLog("Menghapus master data alat: {$alat->nama_alat} (ID: {$alat->id})");
+        LogAktivitas::create([
+            'user_id' => auth()->id(),
+            'aktivitas' => "Menghapus data pengembalian (ID: {$pengembalian->id}).",
+        ]);
     }
 }

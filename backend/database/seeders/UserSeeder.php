@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
                 'alamat' => 'Bandung, West Java',
             ],
             [
-                'name' => 'Arif Muhammad',
+                'name' => 'Cipung',
                 'email' => 'petugas@gmail.com',
                 'password' => Hash::make('password123'),
                 'role' => 'petugas',
