@@ -1,46 +1,46 @@
 <?php
-
+ 
 namespace App\Observers;
-
-use App\Models\Pengembalian;
+ 
+use App\Models\Alat;
 use App\Models\LogAktivitas;
-
+ 
 class AlatObserver
 {
-    public function created(Pengembalian $pengembalian)
+    public function created(Alat $alat)
     {
         LogAktivitas::create([
-            'user_id' => auth()->id() ?? $pengembalian->petugas_id,
-            'aktivitas' => "Memproses pengembalian alat untuk Peminjaman ID: {$pengembalian->peminjaman_id} dengan kondisi '{$pengembalian->kondisi_kembali}' dan denda Rp " . number_format($pengembalian->denda, 0, ',', '.') . ".",
+            'user_id' => auth()->id(),
+            'aktivitas' => "Menambahkan alat baru: '{$alat->nama_alat}' dengan stok {$alat->stok}.",
         ]);
     }
-
-    public function updated(Pengembalian $pengembalian)
+ 
+    public function updated(Alat $alat)
     {
         $changes = [];
-
-        foreach ($pengembalian->getChanges() as $key => $newValue) {
+ 
+        foreach ($alat->getChanges() as $key => $newValue) {
             if ($key != 'updated_at') {
-                $oldValue = $pengembalian->getOriginal($key);
+                $oldValue = $alat->getOriginal($key);
                 $changes[] = "kolom '{$key}' dari '{$oldValue}' ke '{$newValue}'";
             }
         }
-
+ 
         $detailPerubahan = !empty($changes)
             ? implode(', ', $changes)
             : 'memperbarui data';
-
+ 
         LogAktivitas::create([
             'user_id' => auth()->id(),
-            'aktivitas' => "Memperbarui pengembalian ID {$pengembalian->id}: {$detailPerubahan}.",
+            'aktivitas' => "Memperbarui alat '{$alat->nama_alat}' (ID: {$alat->id}): {$detailPerubahan}.",
         ]);
     }
-
-    public function deleted(Pengembalian $pengembalian)
+ 
+    public function deleted(Alat $alat)
     {
         LogAktivitas::create([
             'user_id' => auth()->id(),
-            'aktivitas' => "Menghapus data pengembalian (ID: {$pengembalian->id}).",
+            'aktivitas' => "Menghapus data alat: '{$alat->nama_alat}' (ID: {$alat->id}).",
         ]);
     }
 }

@@ -104,6 +104,7 @@ class PetugasController extends Controller
                 'kondisi_kembali' => $request->kondisi_kembali,
                 'denda' => $request->denda ?? 0,
                 'tgl_kembali' => now(),
+                'petugas_id' => auth()->id(),
             ]);
 
             $peminjaman->update(['status' => 'dikembalikan']);

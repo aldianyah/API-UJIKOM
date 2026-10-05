@@ -1,2 +1,0 @@
-# API-UJIKOM
-# API-UJIKOM

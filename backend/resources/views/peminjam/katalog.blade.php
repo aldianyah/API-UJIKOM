@@ -28,6 +28,13 @@
         @if(session('error'))
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
+        @if($errors->any())
+            <div class="alert alert-danger">
+                @foreach($errors->all() as $e)
+                    <div>{{ $e }}</div>
+                @endforeach
+            </div>
+        @endif
 
         <h3 class="mb-3">Katalog Alat Tersedia</h3>
 
@@ -54,13 +61,13 @@
                             @forelse($alats as $index => $alat)
                             <tr>
                                 <td class="text-center">
-                                    <input type="checkbox" name="alat_id[]" value="{{ $alat->id }}" class="form-check-input">
+                                    <input type="checkbox" name="alat_id[{{ $index }}]" value="{{ $alat->id }}" class="form-check-input">
                                 </td>
                                 <td>{{ $alat->nama_alat }}</td>
                                 <td>{{ $alat->kategori->nama_kategori ?? '-' }}</td>
                                 <td>{{ $alat->stok }}</td>
                                 <td>
-                                    <input type="number" name="jumlah[]" class="form-control form-control-sm" value="1" min="1" max="{{ $alat->stok }}">
+                                    <input type="number" name="jumlah[{{ $index }}]" class="form-control form-control-sm" value="1" min="1" max="{{ $alat->stok }}">
                                 </td>
                             </tr>
                             @empty
